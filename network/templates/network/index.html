@@ -1,4 +1,5 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
 {% if user.is_authenticated %}
@@ -25,5 +26,5 @@
         <h3>{{ user.username }}</h3>
     </div>
 {% endif %}
-
+<script src="{% static 'network/network.js' %}"></script>
 {% endblock %}

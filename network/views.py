@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic.list import ListView
-from .models import User, Post
+from .models import User, Post, Like
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
@@ -104,3 +104,27 @@ def compose(request):
 
     return JsonResponse({"message": "Post created successfully."}, status=201)
 
+@csrf_exempt
+@login_required
+def like(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    # Check recipient emails
+    print ("request body", request.body)
+    data = json.loads(request.body)
+    post = data.get("post")
+    if not post:
+        return JsonResponse({
+            "error": "Post required."
+        }, status=400)
+
+    post = Post.objects.get(pk=post)
+    like = Like(
+        post=post,
+        user=request.user
+    )
+
+    like.save()
+
+    return JsonResponse({"message": "Like successful."}, status=201)

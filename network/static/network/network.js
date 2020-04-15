@@ -75,3 +75,4 @@ function show_post() {
     document.querySelector('#new').style.display = 'block';
     document.querySelector('#cancel_new').style.display = 'none';
 }
+
