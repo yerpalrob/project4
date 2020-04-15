@@ -1,0 +1,15 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+
+
+<div id="post-list" class="posts">
+    <ul>
+        {% for post in object_list %}
+            <li>{{ post.content }}</li>
+        {% endfor %}
+    </ul>          
+</div>
+   
+{% endblock %}

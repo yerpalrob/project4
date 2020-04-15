@@ -2,19 +2,20 @@
 
 {% block body %}
 {% if user.is_authenticated %}
-    <div id="post-view">
-        <h3>Network</h3>
-        <button class="btn btn-sm btn-outline-primary" id="new">New Post</button>
-        <button class="btn btn-sm btn-outline-primary" id="cancel_new">Cancel</button>
 
-        <div id="new-view">
-            <h3>New Post</h3>
-            <form id="create_post">
-                <textarea class="form-control" id="new_post" placeholder="Update Followers"></textarea>
-                <input type="submit" id="send" class="btn btn-primary"/>
-            </form>
-        </div>
+<div id="post-view">
+    <h3>Network</h3>
+    <button class="btn btn-sm btn-outline-primary" id="new">New Post</button>
+    <button class="btn btn-sm btn-outline-primary" id="cancel_new">Cancel</button>
+
+    <div id="new-view">
+        <h3>New Post</h3>
+        <form id="create_post">
+            <textarea class="form-control" id="new_post" placeholder="Update Followers"></textarea>
+            <input type="submit" id="send" class="btn btn-primary"/>
+        </form>
     </div>
+</div>
 
     <div id="following-view">
         <h3>Following</h3>
@@ -24,7 +25,5 @@
         <h3>{{ user.username }}</h3>
     </div>
 {% endif %}
-    <div id="post-list" class="posts">
-                
-    </div>
+
 {% endblock %}

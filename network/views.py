@@ -1,10 +1,14 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-
-from .models import User
+from django.utils import timezone
+from django.views.generic.list import ListView
+from .models import User, Post
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -61,3 +65,42 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+
+
+class PostListView(ListView):
+
+    model = Post
+    paginate_by = 10  
+
+    def get_queryset(self, **kwargs):
+        queryset = super().get_queryset(**kwargs)
+        queryset = queryset.order_by("-timestamp")
+        return queryset
+        
+@csrf_exempt
+@login_required
+def compose(request):
+
+    # Composing a new post must be via POST
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    # Check recipient emails
+    print ("request body", request.body)
+    data = json.loads(request.body)
+    content = data.get("content")
+    if not content:
+        return JsonResponse({
+            "error": "Post content required."
+        }, status=400)
+
+    post = Post(
+        content=content,
+        user=request.user
+    )
+
+    post.save()
+
+    return JsonResponse({"message": "Post created successfully."}, status=201)
+
