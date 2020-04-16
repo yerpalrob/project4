@@ -9,6 +9,8 @@ from django.views.generic.list import ListView
 from .models import User, Post, Like, Follow
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Q
+
 
 
 def index(request):
@@ -75,8 +77,12 @@ class PostListView(ListView):
 
     def get_queryset(self, **kwargs):
         queryset = super().get_queryset(**kwargs)
+        user_liked = Count('like', filter=Q(user=self.request.user))
+        queryset = queryset.annotate(user_liked=user_liked)
         queryset = queryset.order_by("-timestamp")
+        print(queryset[0].content, queryset[0].user_liked)
         return queryset
+
         
 @csrf_exempt
 @login_required
@@ -113,10 +119,9 @@ def user(request, user_id):
 @csrf_exempt
 @login_required
 def like(request):
-    if request.method != "POST":
-        return JsonResponse({"error": "POST request required."}, status=400)
+    if request.method != "POST" and request.method != "DELETE":
+        return JsonResponse({"error": "POST or DELETE request required."}, status=400)
 
-    # Check recipient emails
     print ("request body", request.body)
     data = json.loads(request.body)
     post = data.get("post")
@@ -124,16 +129,22 @@ def like(request):
         return JsonResponse({
             "error": "Post required."
         }, status=400)
+    if request.method == "POST":
+        post = Post.objects.get(pk=post)
+        like = Like(
+            post=post,
+            user=request.user
+        )
 
-    post = Post.objects.get(pk=post)
-    like = Like(
-        post=post,
-        user=request.user
-    )
+        like.save()
 
-    like.save()
+        return JsonResponse({"message": "Like successful."}, status=201)
 
-    return JsonResponse({"message": "Like successful."}, status=201)
+    elif request.method == "DELETE":
+        like = Like.objects.filter(post__pk=post, user=request.user)
+        like.delete()
+        return JsonResponse({"message": "Unlike successful."})
+
 
 @csrf_exempt
 @login_required

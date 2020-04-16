@@ -1,6 +1,17 @@
+
+function addLikeListeners() {
+	document.querySelectorAll(".like").forEach(function(elem) {
+		elem.addEventListener("click", like);
+	});
+};
+function addUnlikeListeners() {
+	document.querySelectorAll(".unlike").forEach(function(elem) {
+		elem.addEventListener("click", unlike);
+	});
+};
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('.like').addEventListener('click', like);
-    document.querySelector('.unlike').addEventListener('click', unlike);
+    addUnlikeListeners();
+    addLikeListeners();
 })
 
 function like(event) {
@@ -23,9 +34,10 @@ function like(event) {
     .then(result => {
         // Print result
         console.log('result', result);
-    })
-    document.querySelector('#like').style.display = 'none';
-    document.querySelector('#unlike').style.display = 'block';
+    });
+    event.target.style.display = 'none';
+    event.target.nextElementSibling.style.display = 'block';
+    location.reload();
 }
 
 function unlike(event) {
@@ -49,6 +61,7 @@ function unlike(event) {
         // Print result
         console.log('result', result);
     })
-    document.querySelector('#like').style.display = 'block';
-    document.querySelector('#unlike').style.display = 'none';
+    event.target.style.display = 'none';
+    event.target.previousElementSibling.style.display = 'block';
+    location.reload();
 }

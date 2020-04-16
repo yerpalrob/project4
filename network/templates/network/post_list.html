@@ -17,16 +17,14 @@
                     <div style="float: right;">(Liked {{ post.like_set.count }} times)</div><br>
                     
                 </div>
-                <div id="like">
-                    <button class="btn btn-sm btn-outline-primary like" data-post_id="{{post.pk}}">
+                    <button class="btn btn-sm btn-outline-primary like" data-post_id="{{post.pk}}" 
+                    style="display: {% if post.user_liked %} none {% else %} block {% endif %}">
                         Like
                     </button>
-                </div>
-                <div id="unlike">
-                    <button class="btn btn-sm btn-outline-primary unlike" data-post_id="{{post.pk}}">
+                    <button class="btn btn-sm btn-outline-primary unlike" data-post_id="{{post.pk}}" 
+                    style="display: {% if post.user_liked %} block {% else %} none {% endif %}">
                         Unlike
                     </button>
-                </div>
             </li>
         {% endfor %}
     </ul>          
