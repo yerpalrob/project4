@@ -6,7 +6,7 @@
 
 
 <div id="post-list" class="posts">
-    <h1>All Posts</h1>
+    <h1>{% if requested_user %} {{requested_user}} {% else %} All Posts {% endif %}</h1>
     <ul>
         {% for post in object_list %}
             <li class="post">

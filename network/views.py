@@ -10,6 +10,8 @@ from .models import User, Post, Like, Follow
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 
 
@@ -82,12 +84,15 @@ class PostListView(ListView):
         user_id = self.request.GET.get('user')
         if user_id:
             queryset = queryset.filter(user__id=user_id)
-        
-        # Determine if the current user already liked each post
-        user_liked = Count('like', filter=Q(user=self.request.user))
-        queryset = queryset.annotate(user_liked=user_liked)
+        if not self.request.user.is_anonymous:
+            # Determine if the current user already liked each post
+            user_liked = Count('like', filter=Q(like__user=self.request.user))
+            queryset = queryset.annotate(user_liked=user_liked)
 
         queryset = queryset.order_by("-timestamp")
+        #print(queryset.query)
+
+        #print('post_id user_id user_liked', queryset[0].pk, self.request.user.pk, queryset[0].user_liked)
         return queryset
 
     def get_context_data(self, *args, **kwargs):
@@ -96,8 +101,9 @@ class PostListView(ListView):
         user_id = self.request.GET.get('user')
         if user_id:
             context_data['requested_user'] = User.objects.get(pk=user_id)
-
+        print (context_data)
         return context_data
+        
 
         
 @csrf_exempt
