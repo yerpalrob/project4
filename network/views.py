@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic.list import ListView
-from .models import User, Post, Like
+from .models import User, Post, Like, Follow
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
@@ -104,6 +104,12 @@ def compose(request):
 
     return JsonResponse({"message": "Post created successfully."}, status=201)
 
+def user(request, user_id):
+    user = User.objects.get(pk=user_id)
+    context = {"user": user}
+
+    return render(request, "network/user.html", context=context)
+
 @csrf_exempt
 @login_required
 def like(request):
@@ -126,5 +132,30 @@ def like(request):
     )
 
     like.save()
+
+    return JsonResponse({"message": "Like successful."}, status=201)
+
+@csrf_exempt
+@login_required
+def follow(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    # Check recipient emails
+    print ("request body", request.body)
+    data = json.loads(request.body)
+    follower = data.get("follower")
+    if not follower:
+        return JsonResponse({
+            "error": "Post required."
+        }, status=400)
+
+    follow = Follow.objects.get(pk=User)
+    follow = Follow(
+        follower=request.user,
+        followee=request.user
+    )
+
+    follow.save()
 
     return JsonResponse({"message": "Like successful."}, status=201)

@@ -2,21 +2,14 @@
 {% load static %}
 
 {% block body %}
-
-
+<div id="user-view">
+    <h3>{{ user.username }}</h3>
+</div>
 
 <div id="post-list" class="posts">
-    <h1>All Posts</h1>
     <ul>
-        {% for post in object_list %}
-            <li class="post">
-                <div id="timestamp">{{post.timestamp}}</div><br>
-                <a href="{% url 'user' user_id=post.user.pk %}">{{post.user}}</a> said <br>
-                <div class="post_content">
-                    {{ post.content }} <br>
-                    <div style="float: right;">(Liked {{ post.like_set.count }} times)</div><br>
-                    
-                </div>
+        {% for post in user.post_set.all %}
+            <li class="post">At {{post.timestamp}} <a href="/{{post.user}}">{{post.user}}</a> said {{ post.content }} (Liked {{ post.like_set.count }} times)
                 <div id="like">
                     <button class="btn btn-sm btn-outline-primary like" data-post_id="{{post.pk}}">
                         Like
@@ -31,6 +24,6 @@
         {% endfor %}
     </ul>          
 </div>
-<script src="{% static 'network/post_list.js' %}"></script>
+<script src="{% static 'network/user.js' %}"></script>
 
 {% endblock %}
