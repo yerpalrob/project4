@@ -77,11 +77,27 @@ class PostListView(ListView):
 
     def get_queryset(self, **kwargs):
         queryset = super().get_queryset(**kwargs)
+        
+        # If a user_id was provided, filter posts by that user
+        user_id = self.request.GET.get('user')
+        if user_id:
+            queryset = queryset.filter(user__id=user_id)
+        
+        # Determine if the current user already liked each post
         user_liked = Count('like', filter=Q(user=self.request.user))
         queryset = queryset.annotate(user_liked=user_liked)
+
         queryset = queryset.order_by("-timestamp")
-        print(queryset[0].content, queryset[0].user_liked)
         return queryset
+
+    def get_context_data(self, *args, **kwargs):
+        context_data = super().get_context_data(*args, **kwargs)
+        
+        user_id = self.request.GET.get('user')
+        if user_id:
+            context_data['requested_user'] = User.objects.get(pk=user_id)
+
+        return context_data
 
         
 @csrf_exempt

@@ -11,7 +11,7 @@
         {% for post in object_list %}
             <li class="post">
                 <div id="timestamp">{{post.timestamp}}</div><br>
-                <a href="{% url 'user' user_id=post.user.pk %}">{{post.user}}</a> said <br>
+                <a href="{% url 'posts' %}?user={{post.user.pk}}">{{post.user}}</a> said <br>
                 <div class="post_content">
                     {{ post.content }} <br>
                     <div style="float: right;">(Liked {{ post.like_set.count }} times)</div><br>
