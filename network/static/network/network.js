@@ -2,17 +2,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#new').addEventListener('click', new_post);
     document.querySelector('#cancel_new').addEventListener('click', cancel_new_post);
     document.querySelector('#send').addEventListener('click', post);
-    document.querySelector('#following').addEventListener('click', following);
-    document.querySelector('#username').addEventListener('click', username);
     document.querySelector('#new-view').style.display = 'none';
-    document.querySelector('#following-view').style.display = 'none';
-    document.querySelector('#post-view').style.display = 'block';
-    document.querySelector('#user-view').style.display = 'none';
-    document.querySelector('#cancel_new').style.display = 'none';
-});
+})
 
 function new_post() {
-
     // Show new post textbox
     document.querySelector('#new-view').style.display = 'block';
     document.querySelector('#new').style.display = 'none';
@@ -23,30 +16,14 @@ function new_post() {
 }
 
 function cancel_new_post() {
-
+    // Hide the new post textbox
     document.querySelector('#new-view').style.display = 'none';
     document.querySelector('#new').style.display = 'block';
     document.querySelector('#cancel_new').style.display = 'none';
 }
 
-function following() {
-
-    // Show new post textbox
-    document.querySelector('#post-view').style.display = 'none';
-    document.querySelector('#user-view').style.display = 'none';
-    document.querySelector('#following-view').style.display = 'block';
-}
-
-function username() {
-
-    // Show new post textbox
-    document.querySelector('#following-view').style.display = 'none';
-    document.querySelector('#post-view').style.display = 'none';
-    document.querySelector('#user-view').style.display = 'block';
-}
-
 function post() {
-    //debugger;
+    // Creates new post
     console.log('in send post');
 	event.preventDefault();
 		const myHeaders = new Headers();
@@ -56,7 +33,7 @@ function post() {
             content: document.getElementById('new_post').value
         };
         console.log(data);
-
+        // Fetches the compose view and logs the post content via POST
 		fetch('/compose', {
 			method: 'POST',
 			headers: myHeaders,
@@ -64,12 +41,12 @@ function post() {
 		})
 		.then(response => response.json())
 		.then(result => {
-			// Print result
 			console.log('result', result);
 		})
 		.then(show_post);
 }
 
+// Originally intended to be the post list, this is the new post button view
 function show_post() {
     document.querySelector('#new-view').style.display = 'none';
     document.querySelector('#new').style.display = 'block';

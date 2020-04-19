@@ -9,7 +9,6 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
     path("posts", views.PostListView.as_view(), name="posts"),
-    path("user/<int:user_id>", views.user, name="user"),
 
     # API urls
     path("compose", views.compose, name="compose"),

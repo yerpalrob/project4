@@ -32,3 +32,60 @@
     font-size: smaller;
     font-style: italic;
 }
+/* Button design made using css-tricks.com/examples/ButtonMaker */
+.button {
+    border-top: 1px solid #97a1f7;
+    background: #5d79d4;
+    background: -webkit-gradient(linear, left top, left bottom, from(blue), to(#5447ff));
+    background: -webkit-linear-gradient(top, blue, #5447ff);
+    background: -moz-linear-gradient(top, blue, #5447ff);
+    background: -ms-linear-gradient(top, blue, #5447ff);
+    background: -o-linear-gradient(top, blue, #5447ff);
+    padding: 6px 12px;
+    -webkit-border-radius: 21px;
+    -moz-border-radius: 21px;
+    border-radius: 21px;
+    -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+    -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+    box-shadow: rgba(0,0,0,1) 0 1px 0;
+    text-shadow: rgba(0,0,0,.4) 0 1px 0;
+    color: white;
+    font-size: 13px;
+    font-family: 'Lucida Grande', Helvetica, Arial, Sans-Serif;
+    text-decoration: none;
+    vertical-align: middle;
+    }
+ .button:hover {
+    border-top-color: #283478;
+    background: #283478;
+    color: #ccc;
+    }
+ .button:active {
+    border-top-color: #1b255c;
+    background: #1b255c;
+    }
+.step-links {
+    clear: both;
+    margin-right: auto;
+    margin-left:  auto;
+    max-width: 960px;
+    padding-right: 10px;
+    padding-left:  10px;
+  }
+body {
+    background-color: yellow;
+    background-image: linear-gradient(yellow, white);
+    background-repeat: no-repeat;
+  }
+h1 {
+    clear: both;
+    margin-right: auto;
+    margin-left:  auto;
+    max-width: 960px;
+    padding-right: 10px;
+    padding-left:  10px;
+    text-align: center;
+ }
+ head {
+     background-color: blue;
+ }

@@ -3,32 +3,73 @@
 
 {% block body %}
 
-
-
+<!-- Post list of either a specific user or of all users -->
 <div id="post-list" class="posts">
     <h1>{% if requested_user %} {{requested_user}} {% else %} All Posts {% endif %}</h1>
+   
+    <!-- If on a users page, show the follow and unfollow buttons and run their script -->
+    {% if requested_user %}
+
+        <button id="follow_button" class="button" data-requested_user_id="{{requested_user.pk}}"
+        style="display: {% if following %} none {% else %} block {% endif %}">
+            Follow
+        </button>
+
+        <button id="unfollow_button" class="button" data-requested_user_id="{{requested_user.pk}}"
+        style="display: {% if following %} block {% else %} none {% endif %}">
+            Unfollow
+        </button>
+
+        <script src="{% static 'network/follow.js' %}"></script>
+
+    {% endif %}
+
+    <!-- Creates a list item for each post in the object list -->
     <ul>
+
         {% for post in object_list %}
+
             <li class="post">
                 <div id="timestamp">{{post.timestamp}}</div><br>
                 <a href="{% url 'posts' %}?user={{post.user.pk}}">{{post.user}}</a> said <br>
                 <div class="post_content">
                     {{ post.content }} <br>
                     <div style="float: right;">(Liked {{ post.like_set.count }} times)</div><br>
-                    
                 </div>
-                    <button class="btn btn-sm btn-outline-primary like" data-post_id="{{post.pk}}" 
+
+                    <button class="button like" data-post_id="{{post.pk}}" 
                     style="display: {% if post.user_liked %} none {% else %} block {% endif %}">
                         Like
                     </button>
-                    <button class="btn btn-sm btn-outline-primary unlike" data-post_id="{{post.pk}}" 
+
+                    <button class="button unlike" data-post_id="{{post.pk}}" 
                     style="display: {% if post.user_liked %} block {% else %} none {% endif %}">
                         Unlike
                     </button>
             </li>
+
         {% endfor %}
     </ul>          
 </div>
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" class="button">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="button">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="button">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="button">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+<br>
+
 <script src="{% static 'network/post_list.js' %}"></script>
 
 {% endblock %}

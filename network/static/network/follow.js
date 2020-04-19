@@ -1,33 +1,20 @@
-// Creates listeners for all of the like buttons on any page
-function addLikeListeners() {
-	document.querySelectorAll(".like").forEach(function(elem) {
-		elem.addEventListener("click", like);
-	});
-};
-// Creates listeners for all of the unlike buttons on any page
-function addUnlikeListeners() {
-	document.querySelectorAll(".unlike").forEach(function(elem) {
-		elem.addEventListener("click", unlike);
-	});
-};
-// When the document is loaded add the listeners
 document.addEventListener('DOMContentLoaded', function() {
-    addUnlikeListeners();
-    addLikeListeners();
+    document.querySelector("#follow_button").addEventListener("click", follow);
+    document.querySelector("#unfollow_button").addEventListener("click", unfollow);
 })
-// Creates a like event
-function like(event) {
-    console.log('in like', event);
+// Follows a user
+function follow(){
+    console.log('in follow', event);
     event.preventDefault();
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     
     const data = {
-        post: event.target.dataset.post_id
+        followee: event.target.dataset.requested_user_id
     };
     console.log(data);
-    // Fetches the like view and adds a like via POST
-    fetch('/like', {
+    // Fetches the follow view and submits a new follow via POST
+    fetch('/follow', {
         method: 'POST',
         headers: myHeaders,
         body: JSON.stringify(data)
@@ -35,24 +22,24 @@ function like(event) {
     .then(response => response.json())
     .then(result => {
         console.log('result', result);
-    });
+    })
     event.target.style.display = 'none';
-    event.target.nextElementSibling.style.display = 'block';
+    event.target.previousElementSibling.style.display = 'block';
     location.reload();
 }
-// Creates an unlike event
-function unlike(event) {
-    console.log('in unlike', event);
+// Unfollow a user
+function unfollow(event) {
+    console.log('in unfollow', event);
     event.preventDefault();
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     
     const data = {
-        post: event.target.dataset.post_id
+        followee: event.target.dataset.requested_user_id
     };
     console.log(data);
-    // Fetches the like view and removes a like via DELETE
-    fetch('/like', {
+    // Fetches the follow view and removes a follow via DELETE
+    fetch('/follow', {
         method: 'DELETE',
         headers: myHeaders,
         body: JSON.stringify(data)

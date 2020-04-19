@@ -84,15 +84,22 @@ class PostListView(ListView):
         user_id = self.request.GET.get('user')
         if user_id:
             queryset = queryset.filter(user__id=user_id)
+
+        # Checks that user is logged in
         if not self.request.user.is_anonymous:
+
             # Determine if the current user already liked each post
             user_liked = Count('like', filter=Q(like__user=self.request.user))
             queryset = queryset.annotate(user_liked=user_liked)
 
-        queryset = queryset.order_by("-timestamp")
-        #print(queryset.query)
+            # Checks who is being followed by the user, filter posts by those users
+            following = self.request.GET.get('following')
+            if following:
+                followed_users = Follow.objects.filter(follower=self.request.user).values_list('followee', flat=True)
+                queryset = queryset.filter(user__pk__in=followed_users)
 
-        #print('post_id user_id user_liked', queryset[0].pk, self.request.user.pk, queryset[0].user_liked)
+        # Order posts in reverse chronological order
+        queryset = queryset.order_by("-timestamp")
         return queryset
 
     def get_context_data(self, *args, **kwargs):
@@ -100,8 +107,12 @@ class PostListView(ListView):
         
         user_id = self.request.GET.get('user')
         if user_id:
-            context_data['requested_user'] = User.objects.get(pk=user_id)
-        print (context_data)
+            requested_user = User.objects.get(pk=user_id)
+            context_data['requested_user'] = requested_user
+
+            if not self.request.user.is_anonymous:
+                if Follow.objects.filter(followee=requested_user, follower=self.request.user).exists():
+                    context_data['following'] = True
         return context_data
         
 
@@ -110,85 +121,89 @@ class PostListView(ListView):
 @login_required
 def compose(request):
 
-    # Composing a new post must be via POST
+    # Checks that the method is POST
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
-
-    # Check recipient emails
+    
+    # Gets the content of the post
     print ("request body", request.body)
     data = json.loads(request.body)
     content = data.get("content")
+    
+    # Verifies there is some content for the post
     if not content:
         return JsonResponse({
             "error": "Post content required."
         }, status=400)
 
+    # Creates the post
     post = Post(
         content=content,
         user=request.user
     )
 
+    # Saves the post
     post.save()
-
     return JsonResponse({"message": "Post created successfully."}, status=201)
-
-def user(request, user_id):
-    user = User.objects.get(pk=user_id)
-    context = {"user": user}
-
-    return render(request, "network/user.html", context=context)
 
 @csrf_exempt
 @login_required
 def like(request):
+    # Verifies that it is either a POST or a DELETE request
     if request.method != "POST" and request.method != "DELETE":
         return JsonResponse({"error": "POST or DELETE request required."}, status=400)
-
+    
+    # Finds the post
     print ("request body", request.body)
     data = json.loads(request.body)
     post = data.get("post")
+    # If it is not a post
     if not post:
         return JsonResponse({
             "error": "Post required."
         }, status=400)
+    # If it was a like/POST add a like
     if request.method == "POST":
         post = Post.objects.get(pk=post)
         like = Like(
             post=post,
             user=request.user
         )
-
         like.save()
-
         return JsonResponse({"message": "Like successful."}, status=201)
-
+    # If it was an unlike/DELETE remove a like
     elif request.method == "DELETE":
         like = Like.objects.filter(post__pk=post, user=request.user)
         like.delete()
         return JsonResponse({"message": "Unlike successful."})
 
-
 @csrf_exempt
 @login_required
 def follow(request):
-    if request.method != "POST":
-        return JsonResponse({"error": "POST request required."}, status=400)
+    # Verifies that it is either a POST or a DELETE request
+    if request.method != "POST" and request.method != "DELETE":
+        return JsonResponse({"error": "POST or DELETE request required."}, status=400)
 
-    # Check recipient emails
+    # Finds the user
     print ("request body", request.body)
     data = json.loads(request.body)
-    follower = data.get("follower")
-    if not follower:
+    followee = data.get("followee")
+    # If the user does not exist
+    if not followee:
         return JsonResponse({
-            "error": "Post required."
+            "error": "followee required."
         }, status=400)
-
-    follow = Follow.objects.get(pk=User)
-    follow = Follow(
-        follower=request.user,
-        followee=request.user
-    )
-
-    follow.save()
-
-    return JsonResponse({"message": "Like successful."}, status=201)
+    # If the user is being followed/POST
+    if request.method == "POST":
+        followee = User.objects.get(pk=followee)
+        follow = Follow(
+            follower=request.user,
+            followee=followee
+        )
+        follow.save()
+        return JsonResponse({"message": "follow successful."}, status=201)
+    # If the user is being unfollowed/DELETE
+    elif request.method == "DELETE":
+        follow = Follow.objects.filter(followee__pk=followee, follower=request.user)
+        follow.delete()
+        return JsonResponse({"message": "unfollow successful."})  

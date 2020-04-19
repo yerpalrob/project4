@@ -1,27 +1,24 @@
 {% extends "network/layout.html" %}
-{% load static %}
-
+{% load static%}
 {% block body %}
 {% if user.is_authenticated %}
 
+<!-- Shows the create a new post button at the top of the page -->
+<h1>Create a new post?</h1>
 <div id="post-view">
-    <h3>Network</h3>
-    <button class="btn btn-sm btn-outline-primary" id="new">New Post</button>
-    <button class="btn btn-sm btn-outline-primary" id="cancel_new">Cancel</button>
-
+    <h3>{{ user.username }}</h3>
+    <button class="button" id="new">New Post</button>
+    <button class="button" id="cancel_new" style="display: none;">Cancel</button>
     <div id="new-view">
         <h3>New Post</h3>
         <form id="create_post">
             <textarea class="form-control" id="new_post" placeholder="Update Followers"></textarea>
-            <input type="submit" id="send" class="btn btn-primary"/>
+            <input type="submit" id="send" class="button"/>
         </form>
     </div>
 </div>
 
-    <div id="following-view">
-        <h3>Following</h3>
-    </div>
-    
 {% endif %}
 <script src="{% static 'network/network.js' %}"></script>
 {% endblock %}
+
